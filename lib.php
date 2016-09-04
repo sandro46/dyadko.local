@@ -1,5 +1,18 @@
 <?php
 
+function db(){
+	try {
+	  $db = new PDO("mysql:host=localhost;dbname=dyadko", 'root', '');
+	  $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	  $db->exec("set names utf8");
+		$db->exec("SET CHARACTER SET utf8");
+	}
+	catch(PDOException $e) {
+	    echo $e->getMessage();
+	}
+	return $db;
+}
+
 function dom(){
 	if(!$GLOBALS['dom']) $GLOBALS['dom'] = new simple_html_dom;
 	return $GLOBALS['dom'];
@@ -8,7 +21,7 @@ function dom(){
 function http_query($url, $post = 0, $postfields = null, $referer = 'http://www.dyadko.ru/'  ){
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_HEADER, 0); // читать заголовок
-	curl_setopt($ch,CURLOPT_COOKIE,'PHPSESSID=ivf4ucpdsdkj0kq7a1ur69od10; _ym_uid=1472328117594142991; _ym_isad=2; _ym_visorc_29237600=w');
+	curl_setopt($ch,CURLOPT_COOKIE,'_ym_uid=1472328117594142991; PHPSESSID=8uqr5a4mfnlmn5ckgkcabli9b7; _ym_isad=2; _ym_visorc_29237600=w');
 	curl_setopt($ch,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
 	curl_setopt($ch,CURLOPT_REFERER,$referer);
 	curl_setopt ($ch, CURLOPT_POST, $post);
@@ -38,8 +51,8 @@ function rekursPrase($url=null, &$cats, $parent, $title = null, $iscontent = nul
 	// }
 	// var_dump($url);
 	// echo($url."\n\r");
-	$html = http_query($url); sleep(3);
-	if($html) $dom->load($html); else {var_dump($url); return;}
+	$html = http_query($url); sleep(1);
+	if(strlen($html)>1000) $dom->load($html); else {continue;}
 
 	if($dom->find('div.CGroups ul li', 0)->innertext){
 		// echo($url."\n\r");
@@ -59,7 +72,8 @@ function rekursPrase($url=null, &$cats, $parent, $title = null, $iscontent = nul
 				// $cats[$pid][]=$cid[1];
 				// echo($cid[1]."\n\r");
 				// var_dump($href);
-				$html2 = http_query($href);sleep(3);
+				$html2 = http_query($href);sleep(1);
+				if(strlen($html2)<1000) continue;
 				$dom2 = new simple_html_dom;
 				$dom2->load($html2);
 				if($dom2->find('table.tbl',0)->class) $iscont = 1;
