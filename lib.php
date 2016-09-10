@@ -18,10 +18,10 @@ function dom(){
 	return $GLOBALS['dom'];
 }
 
-function http_query($url, $post = 0, $postfields = null, $referer = 'http://www.dyadko.ru/'  ){
+function http_query($url, $cookie = null,  $post = 0, $postfields = null, $referer = 'http://www.dyadko.ru/'  ){
 	$ch = curl_init($url);
 	curl_setopt($ch, CURLOPT_HEADER, 0); // читать заголовок
-	curl_setopt($ch,CURLOPT_COOKIE,'_ym_uid=1472328117594142991; PHPSESSID=8uqr5a4mfnlmn5ckgkcabli9b7; _ym_isad=2; _ym_visorc_29237600=w');
+	curl_setopt($ch,CURLOPT_COOKIE,$cookie);
 	curl_setopt($ch,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0');
 	curl_setopt($ch,CURLOPT_REFERER,$referer);
 	curl_setopt ($ch, CURLOPT_POST, $post);
@@ -82,6 +82,16 @@ function rekursPrase($url=null, &$cats, $parent, $title = null, $iscontent = nul
 			}
 		}
 		// return;
+	}
+}
+
+function getChildCat($parent, $all, &$res){
+	foreach($all as $v){
+		if($v['pid']==$parent ){
+			// var_dump($v['iscontent']);die;
+			if($v['iscontent']=='Y') $res[] = $v["id"];
+			getChildCat($v['id'], $all, $res);
+		}
 	}
 }
 
